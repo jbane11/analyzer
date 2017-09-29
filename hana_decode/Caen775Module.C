@@ -12,7 +12,7 @@
 
 #include "Caen775Module.h"
 #include "THaSlotData.h"
-#include "THaString.h"
+#include "TString.h"
 #include <iostream>
 
 using namespace std;
@@ -52,8 +52,9 @@ void Caen775Module::Init() {
   //fDebugFile=0;
   Clear();
   IsInit = kTRUE;
-  string modtypeup=THaString::ToUpper(MyModType());
-  fName = Form("Caen %s %s Module",modtypeup.c_str(),MyModName());
+  TString modtypeup(MyModType());
+  modtypeup.ToUpper();
+  fName = Form("Caen %s %s Module",modtypeup.Data(),MyModName());
 }
 
 Int_t Caen775Module::LoadSlot(THaSlotData *sldat, const UInt_t* evbuffer, const UInt_t *pstop) {
@@ -66,6 +67,8 @@ Int_t Caen775Module::LoadSlot(THaSlotData *sldat, const UInt_t* evbuffer, const 
   ++p;
   for (Int_t i=0;i<nword;i++) {
        ++p;
+       if (p>pstop)
+	 break;
        UInt_t chan=((*p)&0x00ff0000)>>16;
        UInt_t raw=((*p)&0x00000fff);
        Int_t status = sldat->loadData(MyModType(),chan,raw,raw);
